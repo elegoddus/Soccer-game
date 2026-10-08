@@ -7,3 +7,6 @@ obj
 Logs
 .vs
 Library
+Build/
+.vscode/
+*.slnx
