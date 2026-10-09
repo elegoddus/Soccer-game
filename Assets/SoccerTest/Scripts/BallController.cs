@@ -11,6 +11,9 @@ namespace SoccerTest
         private SoccerGameManager manager;
         private bool hasBeenKicked;
         private bool hasScored;
+        private Vector3 scoreTarget;
+        private const float GoalDetectionRadius = 1.2f;
+        private static PhysicsMaterial sharedBouncyMaterial;
 
         public bool IsAvailable => !hasBeenKicked && !hasScored;
         public bool HasScored => hasScored;
@@ -18,6 +21,29 @@ namespace SoccerTest
         private void Awake()
         {
             body = GetComponent<Rigidbody>();
+            GetComponent<SphereCollider>().material = GetBouncyMaterial();
+        }
+
+        private void Start()
+        {
+            if (manager == null)
+            {
+                SoccerGameManager.Instance?.RegisterBall(this);
+            }
+        }
+
+        private void OnDisable()
+        {
+            manager?.UnregisterBall(this);
+        }
+
+        private void FixedUpdate()
+        {
+            if (hasBeenKicked && !hasScored &&
+                Vector3.SqrMagnitude(transform.position - scoreTarget) <= GoalDetectionRadius * GoalDetectionRadius)
+            {
+                Score();
+            }
         }
 
         public void Initialize(SoccerGameManager gameManager)
@@ -33,6 +59,7 @@ namespace SoccerTest
             }
 
             hasBeenKicked = true;
+            scoreTarget = target;
             body.isKinematic = false;
             body.useGravity = true;
             body.angularVelocity = new Vector3(0f, 10f, -8f);
@@ -60,14 +87,29 @@ namespace SoccerTest
             }
 
             hasScored = true;
-#if UNITY_6000_0_OR_NEWER
-            body.linearVelocity = Vector3.zero;
-#else
-            body.velocity = Vector3.zero;
-#endif
-            body.angularVelocity = Vector3.zero;
-            body.isKinematic = true;
+            if (manager == null)
+            {
+                manager = SoccerGameManager.Instance;
+            }
             manager?.OnBallScored(this);
+        }
+
+        public static PhysicsMaterial GetBouncyMaterial()
+        {
+            if (sharedBouncyMaterial != null)
+            {
+                return sharedBouncyMaterial;
+            }
+
+            sharedBouncyMaterial = new PhysicsMaterial("Soccer Ball - Bouncy")
+            {
+                bounciness = 0.75f,
+                dynamicFriction = 0.18f,
+                staticFriction = 0.18f,
+                bounceCombine = PhysicsMaterialCombine.Maximum,
+                frictionCombine = PhysicsMaterialCombine.Minimum
+            };
+            return sharedBouncyMaterial;
         }
     }
 }

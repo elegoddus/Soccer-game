@@ -175,8 +175,8 @@ namespace SoccerTest.Editor
             SerializedObject so = new SerializedObject(manager);
             so.FindProperty("player").objectReferenceValue = player;
             so.FindProperty("targetGoal").objectReferenceValue = goalTarget;
-            so.FindProperty("balls").arraySize = 1;
-            so.FindProperty("balls").GetArrayElementAtIndex(0).objectReferenceValue = ball;
+            so.FindProperty("startingBalls").arraySize = 1;
+            so.FindProperty("startingBalls").GetArrayElementAtIndex(0).objectReferenceValue = ball;
             so.FindProperty("followCamera").objectReferenceValue = followCamera;
             so.FindProperty("goalVfxPrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(VfxPath);
             so.ApplyModifiedPropertiesWithoutUndo();

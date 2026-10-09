@@ -9,6 +9,12 @@ namespace SoccerTest
         [SerializeField] private float rotationSpeed = 12f;
         [SerializeField] private Animator animator;
 
+        [Header("Playable Field Boundary (XZ)")]
+        [Tooltip("Tâm khung giới hạn theo tọa độ world X/Z.")]
+        [SerializeField] private Vector2 fieldCenter = Vector2.zero;
+        [Tooltip("Kích thước toàn bộ khung theo X/Z. Chỉnh trực tiếp trong Inspector nếu cần.")]
+        [SerializeField] private Vector2 fieldSize = new Vector2(22.5f, 16f);
+
         private CharacterController characterController;
         private static readonly int BlendHash = Animator.StringToHash("Blend");
 
@@ -29,7 +35,22 @@ namespace SoccerTest
             input = Vector2.ClampMagnitude(input, 1f);
 
             Vector3 direction = new Vector3(input.x, 0f, input.y);
-            characterController.SimpleMove(direction * moveSpeed);
+            Vector3 currentPosition = transform.position;
+            Vector3 desiredPosition = currentPosition + direction * moveSpeed * Time.deltaTime;
+            Vector2 halfSize = fieldSize * 0.5f;
+            desiredPosition.x = Mathf.Clamp(
+                desiredPosition.x,
+                fieldCenter.x - halfSize.x,
+                fieldCenter.x + halfSize.x);
+            desiredPosition.z = Mathf.Clamp(
+                desiredPosition.z,
+                fieldCenter.y - halfSize.y,
+                fieldCenter.y + halfSize.y);
+
+            Vector3 constrainedVelocity = Time.deltaTime > 0f
+                ? (desiredPosition - currentPosition) / Time.deltaTime
+                : Vector3.zero;
+            characterController.SimpleMove(constrainedVelocity);
 
             if (direction.sqrMagnitude > 0.001f)
             {
@@ -44,6 +65,20 @@ namespace SoccerTest
             {
                 animator.SetFloat(BlendHash, input.magnitude * 0.6f, 0.08f, Time.deltaTime);
             }
+        }
+
+        private void OnValidate()
+        {
+            fieldSize.x = Mathf.Max(0.1f, Mathf.Abs(fieldSize.x));
+            fieldSize.y = Mathf.Max(0.1f, Mathf.Abs(fieldSize.y));
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = new Color(1f, 0.8f, 0.1f, 1f);
+            Vector3 center = new Vector3(fieldCenter.x, transform.position.y + 0.05f, fieldCenter.y);
+            Vector3 size = new Vector3(fieldSize.x, 0.1f, fieldSize.y);
+            Gizmos.DrawWireCube(center, size);
         }
     }
 }

@@ -5,9 +5,22 @@ namespace SoccerTest
     [RequireComponent(typeof(BoxCollider))]
     public sealed class GoalTrigger : MonoBehaviour
     {
+        [Header("Bouncy goal backstop")]
+        [SerializeField] private Vector3 backstopCenter = new Vector3(0.75f, 0f, 0f);
+        [SerializeField] private Vector3 backstopSize = new Vector3(0.15f, 2.2f, 3.35f);
+
+        private void Awake()
+        {
+            BoxCollider backstop = gameObject.AddComponent<BoxCollider>();
+            backstop.isTrigger = false;
+            backstop.center = backstopCenter;
+            backstop.size = backstopSize;
+            backstop.material = BallController.GetBouncyMaterial();
+        }
+
         private void OnTriggerEnter(Collider other)
         {
-            BallController ball = other.GetComponent<BallController>();
+            BallController ball = other.GetComponentInParent<BallController>();
             if (ball != null)
             {
                 ball.Score();
