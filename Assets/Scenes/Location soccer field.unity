@@ -1117,6 +1117,7 @@ MonoBehaviour:
   ballOffset: {x: -4, y: 11, z: -7}
   positionSmoothTime: 0.18
   lookHeight: 0.8
+  ballFollowTimeout: 5
 --- !u!1 &886212026
 GameObject:
   m_ObjectHideFlags: 0

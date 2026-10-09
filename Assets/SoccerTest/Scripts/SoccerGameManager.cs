@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -26,11 +27,13 @@ namespace SoccerTest
         [SerializeField] private Text statusText;
 
         private BallController nearbyBall;
+        private CharacterController playerCollider;
         private readonly List<BallController> activeBalls = new List<BallController>();
 
         private void Awake()
         {
             Instance = this;
+            playerCollider = player.GetComponent<CharacterController>();
 
             foreach (BallController ball in startingBalls ?? Array.Empty<BallController>())
             {
@@ -89,6 +92,7 @@ namespace SoccerTest
 
         public void OnBallScored(BallController ball)
         {
+            SetPlayerCollisionIgnored(ball, false);
             SetStatus("GOAL! Camera sẽ trở lại nhân vật sau 2 giây");
             if (goalVfxPrefab != null)
             {
@@ -134,8 +138,30 @@ namespace SoccerTest
                 return;
             }
 
+            SetPlayerCollisionIgnored(ball, true);
+            StartCoroutine(RestorePlayerCollision(ball, 1.5f));
             SetStatus("Sút bóng!");
             followCamera.FollowBall(ball.transform);
+        }
+
+        private IEnumerator RestorePlayerCollision(BallController ball, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            SetPlayerCollisionIgnored(ball, false);
+        }
+
+        private void SetPlayerCollisionIgnored(BallController ball, bool ignored)
+        {
+            if (ball == null || playerCollider == null)
+            {
+                return;
+            }
+
+            Collider ballCollider = ball.GetComponent<Collider>();
+            if (ballCollider != null)
+            {
+                Physics.IgnoreCollision(ballCollider, playerCollider, ignored);
+            }
         }
 
         private Transform FindNearestGoal(Vector3 ballPosition)

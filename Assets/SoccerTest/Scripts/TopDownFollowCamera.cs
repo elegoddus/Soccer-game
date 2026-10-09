@@ -11,6 +11,7 @@ namespace SoccerTest
         [SerializeField] private Vector3 ballOffset = new Vector3(-4f, 11f, -7f);
         [SerializeField] private float positionSmoothTime = 0.18f;
         [SerializeField] private float lookHeight = 0.8f;
+        [SerializeField] private float ballFollowTimeout = 5f;
 
         private Transform target;
         private Vector3 currentOffset;
@@ -33,6 +34,7 @@ namespace SoccerTest
 
             target = ball;
             currentOffset = ballOffset;
+            returnRoutine = StartCoroutine(ReturnRoutine(ballFollowTimeout));
         }
 
         public void ReturnToPlayerAfter(float delay)
