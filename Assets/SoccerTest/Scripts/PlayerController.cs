@@ -9,10 +9,10 @@ namespace SoccerTest
         [SerializeField] private float rotationSpeed = 12f;
         [SerializeField] private Animator animator;
 
-        [Header("Playable Field Boundary (XZ)")]
-        [Tooltip("Tâm khung giới hạn theo tọa độ world X/Z.")]
+        [Header("Gioi han san (XZ)")]
+        [Tooltip("Tam khung gioi han theo toa do world X/Z.")]
         [SerializeField] private Vector2 fieldCenter = Vector2.zero;
-        [Tooltip("Kích thước toàn bộ khung theo X/Z. Chỉnh trực tiếp trong Inspector nếu cần.")]
+        [Tooltip("Kich thuoc khung theo X/Z, co the chinh trong Inspector.")]
         [SerializeField] private Vector2 fieldSize = new Vector2(22.5f, 16f);
 
         private CharacterController characterController;
@@ -38,6 +38,7 @@ namespace SoccerTest
             Vector3 currentPosition = transform.position;
             Vector3 desiredPosition = currentPosition + direction * moveSpeed * Time.deltaTime;
             Vector2 halfSize = fieldSize * 0.5f;
+            // Giu nhan vat ben trong san.
             desiredPosition.x = Mathf.Clamp(
                 desiredPosition.x,
                 fieldCenter.x - halfSize.x,

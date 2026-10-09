@@ -55,7 +55,7 @@ namespace SoccerTest
 
         private void Update()
         {
-            nearbyBall = FindNearestAvailableBall(true);
+            nearbyBall = FindNearbyBall();
             bool canKick = nearbyBall != null;
             if (kickButton.gameObject.activeSelf != canKick)
             {
@@ -99,6 +99,7 @@ namespace SoccerTest
                 ParticleSystem[] particleSystems = effect.GetComponentsInChildren<ParticleSystem>(true);
                 foreach (ParticleSystem particleSystem in particleSystems)
                 {
+                    // Prefab tat Play On Awake nen can phat thu cong.
                     particleSystem.Clear(true);
                     particleSystem.Play(true);
                 }
@@ -136,7 +137,7 @@ namespace SoccerTest
             followCamera.FollowBall(ball.transform);
         }
 
-        private BallController FindNearestAvailableBall(bool enforceRange)
+        private BallController FindNearbyBall()
         {
             BallController best = null;
             float bestDistanceSqr = float.MaxValue;
@@ -150,7 +151,7 @@ namespace SoccerTest
                 }
 
                 float distanceSqr = Vector3.SqrMagnitude(player.Position - ball.transform.position);
-                if (enforceRange && distanceSqr > kickRangeSqr)
+                if (distanceSqr > kickRangeSqr)
                 {
                     continue;
                 }
@@ -190,6 +191,7 @@ namespace SoccerTest
 
         private void DiscoverAndConfigureSceneBalls()
         {
+            // Tu dong nhan bong moi duoc them vao scene.
             foreach (SphereCollider sphere in FindObjectsByType<SphereCollider>())
             {
                 if (!sphere.gameObject.name.StartsWith("Soccer Ball", StringComparison.OrdinalIgnoreCase))

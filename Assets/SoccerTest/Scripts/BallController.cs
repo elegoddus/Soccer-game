@@ -66,6 +66,7 @@ namespace SoccerTest
 
             float duration = Mathf.Max(0.2f, flightDuration);
             Vector3 displacement = target - transform.position;
+            // Tinh van toc de bong toi dich dung thoi gian.
             Vector3 launchVelocity = new Vector3(
                 displacement.x / duration,
                 (displacement.y - 0.5f * Physics.gravity.y * duration * duration) / duration,
