@@ -13,7 +13,9 @@ namespace SoccerTest
         {
             BoxCollider backstop = gameObject.AddComponent<BoxCollider>();
             backstop.isTrigger = false;
-            backstop.center = backstopCenter;
+            Vector3 center = backstopCenter;
+            center.x = Mathf.Abs(center.x) * (transform.position.x < 0f ? -1f : 1f);
+            backstop.center = center;
             backstop.size = backstopSize;
             backstop.material = BallController.GetBouncyMaterial();
         }

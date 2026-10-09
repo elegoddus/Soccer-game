@@ -13,7 +13,7 @@ namespace SoccerTest
 
         [Header("Gameplay")]
         [SerializeField] private PlayerController player;
-        [SerializeField] private Transform targetGoal;
+        [SerializeField] private Transform[] targetGoals;
         [FormerlySerializedAs("balls")]
         [SerializeField] private BallController[] startingBalls;
         [SerializeField] private float kickRange = 2.5f;
@@ -128,13 +128,38 @@ namespace SoccerTest
 
         private void Kick(BallController ball)
         {
-            if (!ball.KickTo(targetGoal.position))
+            Transform nearestGoal = FindNearestGoal(ball.transform.position);
+            if (nearestGoal == null || !ball.KickTo(nearestGoal.position))
             {
                 return;
             }
 
             SetStatus("Sút bóng!");
             followCamera.FollowBall(ball.transform);
+        }
+
+        private Transform FindNearestGoal(Vector3 ballPosition)
+        {
+            Transform nearestGoal = null;
+            float nearestDistanceSqr = float.MaxValue;
+
+            // Chon khung thanh gan bong nhat.
+            foreach (Transform goal in targetGoals ?? Array.Empty<Transform>())
+            {
+                if (goal == null)
+                {
+                    continue;
+                }
+
+                float distanceSqr = Vector3.SqrMagnitude(ballPosition - goal.position);
+                if (distanceSqr < nearestDistanceSqr)
+                {
+                    nearestDistanceSqr = distanceSqr;
+                    nearestGoal = goal;
+                }
+            }
+
+            return nearestGoal;
         }
 
         private BallController FindNearbyBall()
