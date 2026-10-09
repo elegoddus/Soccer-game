@@ -10,5 +10,4 @@
 ## Cau truc
 
 - `Assets/SoccerTest/Scripts`: ma gameplay.
-- `Assets/SoccerTest/Editor`: cong cu tao scene va build.
 - `Assets/Scenes/Location soccer field.unity`: scene chinh.
